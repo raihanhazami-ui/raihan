@@ -1,0 +1,2388 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>LUMIÈRE — Premium Photo Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Dancing+Script:wght@400;600;700&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A96E;
+    --gold-light: #E8D5B0;
+    --gold-dark: #8B6914;
+    --silver: #C0C0C0;
+    --silver-light: #E8E8E8;
+    --obsidian: #0A0A0A;
+    --charcoal: #1A1A1A;
+    --dark: #111111;
+    --mid: #2A2A2A;
+    --surface: #1E1E1E;
+    --surface2: #252525;
+    --glass: rgba(255,255,255,0.04);
+    --glass2: rgba(255,255,255,0.08);
+    --text-primary: #F5F0E8;
+    --text-secondary: #B8B0A0;
+    --text-muted: #6B6560;
+    --accent: #C9A96E;
+    --rose: #D4788A;
+    --mint: #7AC5A0;
+    --radius: 16px;
+    --radius-lg: 24px;
+    --radius-xl: 32px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--obsidian);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ══════════════════════════════
+     LOADING SCREEN
+  ══════════════════════════════ */
+  #loader {
+    position: fixed; inset: 0; z-index: 9999;
+    background: var(--obsidian);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  #loader.hidden { opacity: 0; pointer-events: none; transform: scale(1.05); }
+
+  .loader-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    animation: logoFade 1s ease forwards;
+    opacity: 0;
+  }
+  .loader-sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.5em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+    animation: logoFade 1s 0.3s ease forwards;
+    opacity: 0;
+  }
+  .loader-bar {
+    width: 200px; height: 1px;
+    background: var(--mid);
+    margin-top: 3rem;
+    overflow: hidden;
+  }
+  .loader-fill {
+    height: 100%;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    animation: loadFill 2s ease forwards;
+    width: 0;
+  }
+  @keyframes logoFade { to { opacity: 1; } }
+  @keyframes loadFill { to { width: 100%; } }
+
+  /* ══════════════════════════════
+     LANDING PAGE
+  ══════════════════════════════ */
+  #landing {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+  #landing::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 50%, rgba(201,169,110,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 80% 20%, rgba(212,120,138,0.05) 0%, transparent 50%),
+      radial-gradient(ellipse 50% 50% at 60% 80%, rgba(122,197,160,0.04) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .noise-overlay {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 200px;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 1.5rem 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    background: linear-gradient(to bottom, rgba(10,10,10,0.9), transparent);
+    backdrop-filter: blur(20px);
+    border-bottom: 0.5px solid rgba(201,169,110,0.1);
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    font-weight: 400;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .nav-tagline {
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+  .nav-cta {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 0.5px solid rgba(201,169,110,0.4);
+    padding: 0.5rem 1.2rem;
+    border-radius: 100px;
+    transition: all 0.3s;
+    cursor: pointer;
+    background: none;
+    font-family: 'Inter', sans-serif;
+  }
+  .nav-cta:hover { background: var(--gold); color: var(--obsidian); }
+
+  /* HERO */
+  .hero {
+    flex: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 8rem 2rem 4rem;
+    position: relative; z-index: 1;
+  }
+  .hero-eyebrow {
+    font-size: 0.6rem;
+    letter-spacing: 0.5em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    animation: slideUp 0.8s 0.5s ease forwards; opacity: 0;
+  }
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3rem, 10vw, 7rem);
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: 0.05em;
+    color: var(--text-primary);
+    animation: slideUp 0.8s 0.7s ease forwards; opacity: 0;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--gold);
+  }
+  .hero-desc {
+    font-size: clamp(0.8rem, 2vw, 0.95rem);
+    color: var(--text-secondary);
+    max-width: 450px;
+    line-height: 1.8;
+    margin: 2rem auto;
+    font-weight: 300;
+    animation: slideUp 0.8s 0.9s ease forwards; opacity: 0;
+  }
+  .hero-actions {
+    display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+    animation: slideUp 0.8s 1.1s ease forwards; opacity: 0;
+    margin-bottom: 4rem;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: var(--obsidian);
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 100px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+    position: relative; overflow: hidden;
+  }
+  .btn-primary::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(201,169,110,0.4); }
+  .btn-primary:hover::before { opacity: 1; }
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-primary);
+    border: 0.5px solid rgba(255,255,255,0.2);
+    padding: 1rem 2rem;
+    border-radius: 100px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    backdrop-filter: blur(10px);
+  }
+  .btn-secondary:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,169,110,0.05); }
+
+  /* SCROLL INDICATOR */
+  .scroll-hint {
+    position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    font-size: 0.55rem; letter-spacing: 0.3em; color: var(--text-muted);
+    text-transform: uppercase;
+    animation: slideUp 0.8s 1.5s ease forwards, scrollBounce 2s 2.5s ease infinite; opacity: 0;
+  }
+  .scroll-line {
+    width: 0.5px; height: 40px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: scrollLine 2s ease infinite;
+  }
+  @keyframes scrollBounce { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(5px); } }
+  @keyframes scrollLine { 0% { transform: scaleY(0); transform-origin: top; } 50% { transform: scaleY(1); transform-origin: top; } 51% { transform: scaleY(1); transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* FEATURES ROW */
+  .features-strip {
+    display: flex; gap: 0; border-top: 0.5px solid rgba(255,255,255,0.06);
+    animation: slideUp 0.8s 1.3s ease forwards; opacity: 0;
+  }
+  .feature-item {
+    flex: 1; padding: 1.5rem; text-align: center;
+    border-right: 0.5px solid rgba(255,255,255,0.06);
+    transition: background 0.3s;
+  }
+  .feature-item:last-child { border-right: none; }
+  .feature-item:hover { background: var(--glass); }
+  .feature-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    color: var(--gold);
+    font-weight: 300;
+    line-height: 1;
+  }
+  .feature-label {
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-top: 0.25rem;
+    display: block;
+  }
+
+  /* ══════════════════════════════
+     APP SHELL
+  ══════════════════════════════ */
+  #app {
+    display: none;
+    min-height: 100vh;
+    flex-direction: column;
+  }
+  #app.active { display: flex; }
+
+  /* APP NAV */
+  .app-nav {
+    background: var(--charcoal);
+    border-bottom: 0.5px solid rgba(201,169,110,0.15);
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky; top: 0; z-index: 50;
+  }
+  .app-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem; font-weight: 400;
+    letter-spacing: 0.2em; color: var(--gold);
+    text-transform: uppercase;
+  }
+  .app-steps {
+    display: flex; gap: 0.25rem;
+  }
+  .app-step {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.6rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 0.5px solid rgba(255,255,255,0.1);
+    color: var(--text-muted);
+    background: transparent;
+    font-family: 'Inter', sans-serif;
+  }
+  .app-step.active { background: var(--gold); color: var(--obsidian); border-color: var(--gold); }
+  .app-step.done { border-color: var(--gold); color: var(--gold); }
+
+  /* ══════════════════════════════
+     MAIN CONTENT AREA
+  ══════════════════════════════ */
+  .app-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  /* STEP PANELS */
+  .step-panel {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+    padding: 1.5rem 1rem;
+    gap: 1.25rem;
+  }
+  .step-panel.active { display: flex; }
+
+  .panel-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem; font-weight: 400;
+    letter-spacing: 0.05em;
+    color: var(--text-primary);
+  }
+  .panel-sub {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    margin-top: 0.2rem;
+  }
+
+  /* LAYOUT SELECTION */
+  .layout-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+  .layout-card {
+    aspect-ratio: 3/4;
+    background: var(--surface);
+    border: 0.5px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius);
+    cursor: pointer;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s;
+    padding: 1rem;
+    position: relative; overflow: hidden;
+  }
+  .layout-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(201,169,110,0.1), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .layout-card:hover { border-color: rgba(201,169,110,0.3); transform: translateY(-2px); }
+  .layout-card:hover::before { opacity: 1; }
+  .layout-card.selected { border-color: var(--gold); background: rgba(201,169,110,0.08); }
+  .layout-card.selected::before { opacity: 1; }
+  .layout-preview {
+    display: flex; flex-wrap: wrap;
+    gap: 2px; justify-content: center;
+    width: 60px;
+  }
+  .layout-thumb {
+    background: rgba(201,169,110,0.3);
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .layout-name {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    text-align: center;
+    font-weight: 500;
+  }
+  .layout-badge {
+    position: absolute; top: 8px; right: 8px;
+    background: var(--gold);
+    color: var(--obsidian);
+    font-size: 0.45rem;
+    letter-spacing: 0.1em;
+    padding: 2px 6px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  /* TEMPLATE GRID */
+  .template-search {
+    position: relative;
+  }
+  .template-search input {
+    width: 100%;
+    background: var(--surface);
+    border: 0.5px solid rgba(255,255,255,0.08);
+    border-radius: 100px;
+    padding: 0.7rem 1.2rem 0.7rem 2.8rem;
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .template-search input:focus { border-color: rgba(201,169,110,0.4); }
+  .template-search input::placeholder { color: var(--text-muted); }
+  .search-icon {
+    position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+    color: var(--text-muted); font-size: 0.8rem;
+  }
+
+  .category-tabs {
+    display: flex; gap: 0.5rem;
+    overflow-x: auto; padding-bottom: 0.25rem;
+    scrollbar-width: none;
+  }
+  .category-tabs::-webkit-scrollbar { display: none; }
+  .cat-tab {
+    flex-shrink: 0;
+    padding: 0.4rem 0.9rem;
+    border-radius: 100px;
+    background: var(--surface);
+    border: 0.5px solid rgba(255,255,255,0.08);
+    color: var(--text-muted);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Inter', sans-serif;
+    white-space: nowrap;
+  }
+  .cat-tab:hover { color: var(--text-primary); border-color: rgba(255,255,255,0.2); }
+  .cat-tab.active { background: var(--gold); color: var(--obsidian); border-color: var(--gold); }
+
+  .template-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  .template-card {
+    aspect-ratio: 3/4;
+    border-radius: var(--radius);
+    cursor: pointer;
+    position: relative; overflow: hidden;
+    border: 0.5px solid rgba(255,255,255,0.08);
+    transition: all 0.3s;
+  }
+  .template-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
+  .template-card.selected { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold); }
+  .template-bg {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+  }
+  .template-label {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 0.75rem 0.5rem 0.5rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    font-size: 0.6rem; letter-spacing: 0.1em; color: #fff;
+    text-transform: uppercase; font-weight: 500;
+  }
+  .template-check {
+    position: absolute; top: 8px; right: 8px;
+    width: 20px; height: 20px;
+    background: var(--gold); border-radius: 50%;
+    display: none; align-items: center; justify-content: center;
+    font-size: 0.6rem; color: var(--obsidian);
+  }
+  .template-card.selected .template-check { display: flex; }
+
+  /* CAMERA VIEW */
+  .camera-container {
+    position: relative;
+    background: #000;
+    border-radius: var(--radius);
+    overflow: hidden;
+    aspect-ratio: 4/3;
+    width: 100%;
+  }
+  #videoEl {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1);
+  }
+  .camera-overlay {
+    position: absolute; inset: 0;
+    pointer-events: none;
+  }
+  .guide-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(201,169,110,0.15) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,169,110,0.15) 1px, transparent 1px);
+    background-size: 33.33% 33.33%;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .guide-grid.visible { opacity: 1; }
+  .camera-frame {
+    position: absolute; inset: 12px;
+    border: 1px solid rgba(201,169,110,0.4);
+    border-radius: 4px;
+    pointer-events: none;
+  }
+  .camera-frame::before, .camera-frame::after,
+  .camera-frame > span::before, .camera-frame > span::after {
+    content: '';
+    position: absolute;
+    width: 20px; height: 20px;
+    border-color: var(--gold);
+    border-style: solid;
+  }
+  .camera-frame::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+  .camera-frame::after { top: -1px; right: -1px; border-width: 2px 2px 0 0; }
+  .camera-frame > span::before { bottom: -1px; left: -1px; border-width: 0 0 2px 2px; }
+  .camera-frame > span::after { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+
+  .flash-overlay {
+    position: absolute; inset: 0;
+    background: #fff;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.05s;
+  }
+  .flash-overlay.flash { opacity: 1; }
+
+  .countdown-display {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 8rem; font-weight: 300;
+    color: #fff;
+    text-shadow: 0 0 60px rgba(201,169,110,0.8);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .countdown-display.visible { opacity: 1; }
+
+  .pose-guide {
+    position: absolute; inset: 0;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .pose-guide.visible { opacity: 1; }
+  .pose-silhouette {
+    width: 80px;
+    opacity: 0.2;
+    filter: brightness(10);
+  }
+
+  /* CAMERA CONTROLS */
+  .camera-controls {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+  .ctrl-group {
+    display: flex; flex-direction: column; gap: 0.5rem;
+  }
+  .ctrl-label {
+    font-size: 0.55rem; letter-spacing: 0.15em;
+    color: var(--text-muted); text-transform: uppercase;
+    margin-bottom: 0.25rem;
+  }
+  .ctrl-btn {
+    background: var(--surface);
+    border: 0.5px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius);
+    padding: 0.6rem;
+    color: var(--text-secondary);
+    font-size: 0.65rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.05em;
+  }
+  .ctrl-btn:hover { border-color: rgba(201,169,110,0.3); color: var(--text-primary); }
+  .ctrl-btn.active { background: rgba(201,169,110,0.1); border-color: var(--gold); color: var(--gold); }
+
+  /* SHUTTER */
+  .shutter-area {
+    display: flex; align-items: center; justify-content: center; gap: 2rem;
+  }
+  .shutter-btn {
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    border: 4px solid rgba(201,169,110,0.3);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+    position: relative;
+  }
+  .shutter-btn:hover { transform: scale(1.05); box-shadow: 0 0 40px rgba(201,169,110,0.5); }
+  .shutter-btn:active { transform: scale(0.95); }
+  .shutter-ring {
+    position: absolute; inset: -8px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,169,110,0.3);
+    animation: shutterPulse 2s ease infinite;
+  }
+  @keyframes shutterPulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.5; } }
+  .shutter-icon { font-size: 1.4rem; }
+
+  .timer-btns {
+    display: flex; flex-direction: column; gap: 0.4rem;
+  }
+  .timer-btn {
+    background: var(--surface);
+    border: 0.5px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 0.4rem 0.8rem;
+    color: var(--text-muted);
+    font-size: 0.6rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.1em;
+  }
+  .timer-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(201,169,110,0.08); }
+
+  /* SHOTS PREVIEW */
+  .shots-row {
+    display: flex; gap: 0.5rem;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+    scrollbar-width: none;
+  }
+  .shots-row::-webkit-scrollbar { display: none; }
+  .shot-thumb {
+    flex-shrink: 0;
+    width: 60px; height: 80px;
+    background: var(--surface);
+    border-radius: 8px;
+    border: 0.5px solid rgba(255,255,255,0.1);
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .shot-thumb img { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+  .shot-thumb .shot-num {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem; color: var(--text-muted);
+  }
+  .shot-thumb:hover { border-color: var(--gold); }
+  .shot-thumb.retake-active {
+    border-color: var(--rose);
+    box-shadow: 0 0 0 2px var(--rose);
+  }
+
+  /* ══════════════════════════════
+     EDITING PANEL
+  ══════════════════════════════ */
+  .edit-preview {
+    width: 100%;
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--surface);
+  }
+  #compositeCanvas {
+    width: 100%;
+    display: block;
+  }
+  .edit-tools-tabs {
+    display: flex; gap: 0;
+    border: 0.5px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .edit-tab {
+    flex: 1; padding: 0.6rem 0.25rem;
+    background: var(--surface);
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-right: 0.5px solid rgba(255,255,255,0.06);
+    font-family: 'Inter', sans-serif;
+  }
+  .edit-tab:last-child { border-right: none; }
+  .edit-tab.active { background: rgba(201,169,110,0.1); color: var(--gold); }
+
+  .edit-panel-content { display: none; }
+  .edit-panel-content.active { display: block; }
+
+  /* SLIDERS */
+  .slider-row {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.5rem 0;
+  }
+  .slider-label {
+    font-size: 0.6rem; letter-spacing: 0.1em;
+    color: var(--text-muted); text-transform: uppercase;
+    min-width: 70px;
+  }
+  .slider-val {
+    font-size: 0.65rem; color: var(--gold);
+    min-width: 30px; text-align: right;
+    font-weight: 500;
+  }
+  .custom-range {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 2px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 100px;
+    outline: none;
+  }
+  .custom-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--gold);
+    cursor: pointer;
+    border: 2px solid var(--obsidian);
+    box-shadow: 0 0 10px rgba(201,169,110,0.4);
+    transition: transform 0.2s;
+  }
+  .custom-range::-webkit-slider-thumb:hover { transform: scale(1.3); }
+
+  /* TONE PRESETS */
+  .tone-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem;
+  }
+  .tone-btn {
+    aspect-ratio: 1;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 0.5rem; letter-spacing: 0.1em;
+    color: #fff;
+    text-align: center;
+    display: flex; align-items: flex-end; justify-content: center;
+    padding: 0.4rem;
+    border: 0.5px solid rgba(255,255,255,0.1);
+    transition: all 0.2s;
+    text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+  }
+  .tone-btn:hover, .tone-btn.active { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold); }
+
+  /* STICKER/DECO */
+  .deco-scroll {
+    display: flex; gap: 0.5rem;
+    overflow-x: auto;
+    padding: 0.25rem 0;
+    scrollbar-width: none;
+  }
+  .deco-scroll::-webkit-scrollbar { display: none; }
+  .deco-item {
+    flex-shrink: 0;
+    width: 52px; height: 52px;
+    background: var(--surface);
+    border: 0.5px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 1.5rem;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .deco-item:hover { border-color: var(--gold); transform: scale(1.1); }
+  .deco-item.active { border-color: var(--gold); background: rgba(201,169,110,0.1); }
+
+  /* TEXT TOOLS */
+  .text-input-area {
+    background: var(--surface);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    width: 100%;
+    resize: none;
+    outline: none;
+    font-family: 'Inter', sans-serif;
+    transition: border-color 0.3s;
+    min-height: 60px;
+  }
+  .text-input-area:focus { border-color: rgba(201,169,110,0.4); }
+
+  .font-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;
+  }
+  .font-btn {
+    padding: 0.6rem;
+    background: var(--surface);
+    border: 0.5px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius);
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .font-btn:hover, .font-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(201,169,110,0.08); }
+
+  .color-palette {
+    display: flex; gap: 0.5rem; flex-wrap: wrap;
+  }
+  .color-swatch {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s;
+    border: 2px solid transparent;
+  }
+  .color-swatch:hover { transform: scale(1.15); }
+  .color-swatch.selected { border-color: #fff; transform: scale(1.15); }
+
+  /* ══════════════════════════════
+     OUTPUT / EXPORT
+  ══════════════════════════════ */
+  .export-preview {
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 0.5px solid rgba(201,169,110,0.3);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  #exportCanvas {
+    width: 100%;
+    display: block;
+  }
+
+  .export-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem;
+  }
+  .export-btn {
+    background: var(--surface);
+    border: 0.5px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius);
+    padding: 1rem;
+    cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    transition: all 0.3s;
+    color: var(--text-secondary);
+    font-family: 'Inter', sans-serif;
+  }
+  .export-btn:hover { border-color: rgba(201,169,110,0.3); color: var(--text-primary); background: var(--glass); }
+  .export-icon { font-size: 1.5rem; }
+  .export-label {
+    font-size: 0.6rem; letter-spacing: 0.15em;
+    text-transform: uppercase; font-weight: 500;
+  }
+  .export-desc {
+    font-size: 0.55rem;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  .export-btn-primary {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    border: none;
+    border-radius: var(--radius);
+    padding: 1.1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+    color: var(--obsidian);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: all 0.3s;
+    width: 100%;
+  }
+  .export-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(201,169,110,0.4); }
+
+  /* BOTTOM NAV */
+  .app-bottom-nav {
+    background: var(--charcoal);
+    border-top: 0.5px solid rgba(255,255,255,0.08);
+    padding: 0.75rem 1rem;
+    display: flex; gap: 0.75rem;
+    position: sticky; bottom: 0;
+  }
+  .nav-btn-back {
+    flex: 0;
+    background: var(--surface);
+    border: 0.5px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius);
+    padding: 0.75rem 1.25rem;
+    color: var(--text-secondary);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+    white-space: nowrap;
+  }
+  .nav-btn-back:hover { color: var(--text-primary); }
+  .nav-btn-next {
+    flex: 1;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.75rem;
+    color: var(--obsidian);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Inter', sans-serif;
+  }
+  .nav-btn-next:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(201,169,110,0.4); }
+  .nav-btn-next:disabled { opacity: 0.4; transform: none; box-shadow: none; cursor: not-allowed; }
+
+  /* SECTION HEADER */
+  .section-hd {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .section-hd-title {
+    font-size: 0.65rem; letter-spacing: 0.2em;
+    color: var(--text-muted); text-transform: uppercase;
+  }
+  .section-hd-action {
+    font-size: 0.6rem; color: var(--gold);
+    cursor: pointer; letter-spacing: 0.1em;
+    border: none; background: none; font-family: 'Inter', sans-serif;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--charcoal);
+    border: 0.5px solid rgba(201,169,110,0.3);
+    border-radius: 100px;
+    padding: 0.6rem 1.5rem;
+    font-size: 0.7rem;
+    color: var(--text-primary);
+    letter-spacing: 0.05em;
+    z-index: 200;
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(201,169,110,0.2); border-radius: 100px; }
+
+  /* GLASS CARD */
+  .glass-card {
+    background: rgba(255,255,255,0.03);
+    border: 0.5px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius);
+    backdrop-filter: blur(10px);
+    padding: 1rem;
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 0.5px;
+    background: rgba(255,255,255,0.06);
+    margin: 0.25rem 0;
+  }
+
+  /* FILTER CANVAS */
+  .filter-canvas-hidden {
+    display: none;
+  }
+
+  /* PHOTO STRIP PREVIEW */
+  .strip-slot {
+    position: relative;
+    background: rgba(0,0,0,0.3);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 0.5px dashed rgba(201,169,110,0.3);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-muted);
+    font-size: 0.6rem;
+  }
+  .strip-slot img { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+  .strip-slot.filled { border-style: solid; border-color: rgba(201,169,110,0.2); }
+
+  /* SUCCESS STATE */
+  .success-icon {
+    width: 60px; height: 60px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    margin: 0 auto 1rem;
+    animation: successPop 0.5s cubic-bezier(0.16,1,0.3,1);
+  }
+  @keyframes successPop {
+    0% { transform: scale(0); opacity: 0; }
+    70% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* WATERMARK INPUT */
+  .wm-row {
+    display: flex; gap: 0.5rem; align-items: center;
+  }
+  .wm-input {
+    flex: 1;
+    background: var(--surface);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 0.6rem 0.75rem;
+    color: var(--text-primary);
+    font-size: 0.75rem;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+  }
+  .wm-input:focus { border-color: rgba(201,169,110,0.4); }
+  .wm-toggle {
+    width: 40px; height: 22px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 100px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.3s;
+    border: none;
+  }
+  .wm-toggle::after {
+    content: '';
+    position: absolute;
+    width: 16px; height: 16px;
+    background: #fff;
+    border-radius: 50%;
+    top: 3px; left: 3px;
+    transition: transform 0.3s;
+  }
+  .wm-toggle.on { background: var(--gold); }
+  .wm-toggle.on::after { transform: translateX(18px); }
+
+</style>
+</head>
+<body>
+
+<div class="noise-overlay"></div>
+
+<!-- LOADING -->
+<div id="loader">
+  <div class="loader-logo">Azam</div>
+  <div class="loader-sub">Premium Photo Studio</div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+</div>
+
+<!-- ══════ LANDING PAGE ══════ -->
+<section id="landing">
+  <nav>
+    <a class="nav-logo" href="#">Azam</a>
+    <div class="nav-tagline">Studio Foto Premium</div>
+    <button class="nav-cta" onclick="startApp()">Mulai →</button>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-eyebrow">✦ Photo Booth Experience</div>
+    <h1 class="hero-title">
+      Abadikan<br><em>Momen</em><br>Indah
+    </h1>
+    <p class="hero-desc">Studio foto premium dalam genggaman. Ratusan template elegan, filter sinematik, dan pengalaman yang tak terlupakan.</p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="startApp()">Buka Studio →</button>
+      <button class="btn-secondary">Lihat Galeri</button>
+    </div>
+
+    <div class="features-strip">
+      <div class="feature-item">
+        <div class="feature-num">100+</div>
+        <span class="feature-label">Template</span>
+      </div>
+      <div class="feature-item">
+        <div class="feature-num">12</div>
+        <span class="feature-label">Kategori</span>
+      </div>
+      <div class="feature-item">
+        <div class="feature-num">4K</div>
+        <span class="feature-label">Export</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    Scroll
+  </div>
+</section>
+
+<!-- ══════ APP SHELL ══════ -->
+<div id="app">
+  <header class="app-nav">
+    <span class="app-logo">Azam</span>
+    <div class="app-steps">
+      <button class="app-step active" id="step-dot-1" onclick="goToStep(1)">1</button>
+      <button class="app-step" id="step-dot-2" onclick="goToStep(2)">2</button>
+      <button class="app-step" id="step-dot-3" onclick="goToStep(3)">3</button>
+      <button class="app-step" id="step-dot-4" onclick="goToStep(4)">4</button>
+      <button class="app-step" id="step-dot-5" onclick="goToStep(5)">5</button>
+    </div>
+  </header>
+
+  <div class="app-content">
+
+    <!-- ══ STEP 1: LAYOUT ══ -->
+    <div class="step-panel active" id="step-1">
+      <div>
+        <div class="panel-title">Pilih Layout</div>
+        <div class="panel-sub">Tentukan komposisi foto Anda</div>
+      </div>
+
+      <div class="layout-grid">
+        <div class="layout-card" onclick="selectLayout('single')" id="layout-single">
+          <div class="layout-badge">Portrait</div>
+          <div class="layout-preview">
+            <div class="layout-thumb" style="width:50px;height:70px;"></div>
+          </div>
+          <div class="layout-name">1 Foto</div>
+        </div>
+        <div class="layout-card" onclick="selectLayout('quad')" id="layout-quad">
+          <div class="layout-preview" style="width:54px;flex-wrap:wrap;gap:3px;">
+            <div class="layout-thumb" style="width:25px;height:33px;"></div>
+            <div class="layout-thumb" style="width:25px;height:33px;"></div>
+            <div class="layout-thumb" style="width:25px;height:33px;"></div>
+            <div class="layout-thumb" style="width:25px;height:33px;"></div>
+          </div>
+          <div class="layout-name">4 Foto Grid</div>
+        </div>
+        <div class="layout-card" onclick="selectLayout('strip')" id="layout-strip">
+          <div class="layout-badge">Aesthetic</div>
+          <div class="layout-preview" style="flex-direction:column;gap:3px;width:30px;">
+            <div class="layout-thumb" style="width:30px;height:18px;"></div>
+            <div class="layout-thumb" style="width:30px;height:18px;"></div>
+            <div class="layout-thumb" style="width:30px;height:18px;"></div>
+            <div class="layout-thumb" style="width:30px;height:18px;"></div>
+            <div class="layout-thumb" style="width:30px;height:18px;"></div>
+            <div class="layout-thumb" style="width:30px;height:18px;"></div>
+          </div>
+          <div class="layout-name">6 Strip</div>
+        </div>
+      </div>
+
+      <div class="glass-card">
+        <div style="font-size:0.65rem;color:var(--text-muted);letter-spacing:0.1em;margin-bottom:0.5rem;text-transform:uppercase;">Preview Komposisi</div>
+        <div id="layout-preview-box" style="background:var(--obsidian);border-radius:8px;padding:1rem;display:flex;align-items:center;justify-content:center;min-height:80px;">
+          <div style="font-size:0.7rem;color:var(--text-muted);">Pilih layout di atas</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ STEP 2: TEMPLATE ══ -->
+    <div class="step-panel" id="step-2">
+      <div>
+        <div class="panel-title">Pilih Template</div>
+        <div class="panel-sub">100+ desain premium tersedia</div>
+      </div>
+
+      <div class="template-search">
+        <span class="search-icon">⌕</span>
+        <input type="text" placeholder="Cari template..." oninput="filterTemplates(this.value)">
+      </div>
+
+      <div class="category-tabs" id="cat-tabs">
+        <button class="cat-tab active" onclick="setCategory('all', this)">Semua</button>
+        <button class="cat-tab" onclick="setCategory('luxury', this)">Luxury</button>
+        <button class="cat-tab" onclick="setCategory('cute', this)">Cute</button>
+        <button class="cat-tab" onclick="setCategory('korean', this)">Korean</button>
+        <button class="cat-tab" onclick="setCategory('vintage', this)">Vintage</button>
+        <button class="cat-tab" onclick="setCategory('minimal', this)">Minimal</button>
+        <button class="cat-tab" onclick="setCategory('dark', this)">Dark</button>
+        <button class="cat-tab" onclick="setCategory('colorful', this)">Colorful</button>
+        <button class="cat-tab" onclick="setCategory('birthday', this)">Birthday</button>
+        <button class="cat-tab" onclick="setCategory('wedding', this)">Wedding</button>
+        <button class="cat-tab" onclick="setCategory('graduation', this)">Grad</button>
+        <button class="cat-tab" onclick="setCategory('cinematic', this)">Cinematic</button>
+      </div>
+
+      <div class="template-grid" id="template-grid">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+    <!-- ══ STEP 3: CAMERA ══ -->
+    <div class="step-panel" id="step-3">
+      <div>
+        <div class="panel-title">Studio Foto</div>
+        <div class="panel-sub">Ambil foto Anda</div>
+      </div>
+
+      <!-- SHOTS TRACKER -->
+      <div class="section-hd">
+        <div class="section-hd-title">Foto diambil: <span id="shots-count">0</span>/<span id="shots-needed">1</span></div>
+        <button class="section-hd-action" onclick="clearShots()">Reset</button>
+      </div>
+
+      <div class="shots-row" id="shots-row">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- CAMERA -->
+      <div class="camera-container">
+        <video id="videoEl" autoplay muted playsinline></video>
+        <div class="camera-overlay">
+          <div class="camera-frame"><span></span></div>
+          <div class="guide-grid" id="guide-grid"></div>
+          <div class="pose-guide" id="pose-guide">
+            <div style="font-size:4rem;opacity:0.3;filter:blur(1px);">🧍</div>
+          </div>
+        </div>
+        <div class="flash-overlay" id="flash-overlay"></div>
+        <div class="countdown-display" id="countdown">3</div>
+        <canvas id="snapCanvas" style="display:none;"></canvas>
+      </div>
+
+      <!-- CAMERA CONTROLS -->
+      <div class="camera-controls">
+        <div class="ctrl-group">
+          <div class="ctrl-label">Countdown</div>
+          <div class="timer-btns">
+            <button class="timer-btn active" onclick="setTimer(0, this)">Langsung</button>
+            <button class="timer-btn" onclick="setTimer(3, this)">3 Detik</button>
+            <button class="timer-btn" onclick="setTimer(5, this)">5 Detik</button>
+            <button class="timer-btn" onclick="setTimer(10, this)">10 Detik</button>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:center;">
+          <div class="shutter-area">
+            <div>
+              <div class="shutter-btn" onclick="capturePhoto()" id="shutter-btn">
+                <div class="shutter-ring"></div>
+                <span class="shutter-icon">📷</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ctrl-group">
+          <div class="ctrl-label">Efek</div>
+          <button class="ctrl-btn" id="btn-guide" onclick="toggleGuide()">Grid Guide</button>
+          <button class="ctrl-btn" id="btn-pose" onclick="togglePose()">Pose Guide</button>
+          <button class="ctrl-btn" id="btn-mirror" onclick="toggleMirror()">Mirror</button>
+        </div>
+      </div>
+
+      <!-- FILTER PRESETS -->
+      <div>
+        <div class="ctrl-label" style="margin-bottom:0.5rem;">Filter Kamera</div>
+        <div class="deco-scroll" id="camera-filters">
+          <div class="deco-item active" onclick="setCameraFilter('none', this)" title="Normal" style="font-size:0.55rem;letter-spacing:0.05em;color:var(--text-secondary);">Normal</div>
+          <div class="deco-item" onclick="setCameraFilter('beauty', this)" title="Beauty" style="font-size:0.55rem;">✨</div>
+          <div class="deco-item" onclick="setCameraFilter('warm', this)" title="Warm" style="font-size:0.55rem;">🌅</div>
+          <div class="deco-item" onclick="setCameraFilter('cool', this)" title="Cool" style="font-size:0.55rem;">❄️</div>
+          <div class="deco-item" onclick="setCameraFilter('bw', this)" title="B&W" style="font-size:0.55rem;color:var(--text-secondary);">B&W</div>
+          <div class="deco-item" onclick="setCameraFilter('vintage', this)" title="Vintage" style="font-size:0.55rem;">🎞️</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ STEP 4: EDIT ══ -->
+    <div class="step-panel" id="step-4">
+      <div>
+        <div class="panel-title">Edit & Dekorasi</div>
+        <div class="panel-sub">Personalisasi foto Anda</div>
+      </div>
+
+      <div class="edit-preview">
+        <canvas id="compositeCanvas"></canvas>
+      </div>
+
+      <div class="edit-tools-tabs">
+        <button class="edit-tab active" onclick="setEditTab('adjust', this)">Adjust</button>
+        <button class="edit-tab" onclick="setEditTab('filter', this)">Filter</button>
+        <button class="edit-tab" onclick="setEditTab('deco', this)">Deko</button>
+        <button class="edit-tab" onclick="setEditTab('text', this)">Teks</button>
+        <button class="edit-tab" onclick="setEditTab('frame', this)">Frame</button>
+      </div>
+
+      <!-- ADJUST -->
+      <div class="edit-panel-content active" id="edit-adjust">
+        <div class="slider-row">
+          <div class="slider-label">Brightness</div>
+          <input type="range" class="custom-range" min="-100" max="100" value="0" oninput="adjustImage('brightness', this.value); this.nextElementSibling.textContent = this.value">
+          <div class="slider-val">0</div>
+        </div>
+        <div class="slider-row">
+          <div class="slider-label">Contrast</div>
+          <input type="range" class="custom-range" min="-100" max="100" value="0" oninput="adjustImage('contrast', this.value); this.nextElementSibling.textContent = this.value">
+          <div class="slider-val">0</div>
+        </div>
+        <div class="slider-row">
+          <div class="slider-label">Saturation</div>
+          <input type="range" class="custom-range" min="-100" max="100" value="0" oninput="adjustImage('saturation', this.value); this.nextElementSibling.textContent = this.value">
+          <div class="slider-val">0</div>
+        </div>
+        <div class="slider-row">
+          <div class="slider-label">Sharpness</div>
+          <input type="range" class="custom-range" min="0" max="100" value="0" oninput="adjustImage('sharpness', this.value); this.nextElementSibling.textContent = this.value">
+          <div class="slider-val">0</div>
+        </div>
+        <div class="slider-row">
+          <div class="slider-label">Vignette</div>
+          <input type="range" class="custom-range" min="0" max="100" value="0" oninput="adjustImage('vignette', this.value); this.nextElementSibling.textContent = this.value">
+          <div class="slider-val">0</div>
+        </div>
+      </div>
+
+      <!-- FILTER -->
+      <div class="edit-panel-content" id="edit-filter">
+        <div class="tone-grid">
+          <div class="tone-btn active" style="background:linear-gradient(135deg,#888,#444);" onclick="applyTone('none',this)">Original</div>
+          <div class="tone-btn" style="background:linear-gradient(135deg,#c8a97e,#8b6914);" onclick="applyTone('warm',this)">Warm</div>
+          <div class="tone-btn" style="background:linear-gradient(135deg,#7db8d4,#2d5a7a);" onclick="applyTone('cool',this)">Cool</div>
+          <div class="tone-btn" style="background:linear-gradient(135deg,#666,#111);" onclick="applyTone('bw',this)">B&W</div>
+          <div class="tone-btn" style="background:linear-gradient(135deg,#d4a070,#604020);" onclick="applyTone('vintage',this)">Vintage</div>
+          <div class="tone-btn" style="background:linear-gradient(135deg,#1a1a2e,#0a0a14);" onclick="applyTone('cinematic',this)">Cinematic</div>
+          <div class="tone-btn" style="background:linear-gradient(135deg,#d4b8c0,#8a5060);" onclick="applyTone('rose',this)">Rose</div>
+          <div class="tone-btn" style="background:linear-gradient(135deg,#b8d4c0,#406050);" onclick="applyTone('mint',this)">Mint</div>
+        </div>
+      </div>
+
+      <!-- DEKO -->
+      <div class="edit-panel-content" id="edit-deco">
+        <div class="ctrl-label" style="margin-bottom:0.5rem;">Stiker & Elemen</div>
+        <div class="deco-scroll" id="sticker-row">
+          <div class="deco-item" onclick="addSticker('🌸')">🌸</div>
+          <div class="deco-item" onclick="addSticker('⭐')">⭐</div>
+          <div class="deco-item" onclick="addSticker('💫')">💫</div>
+          <div class="deco-item" onclick="addSticker('✨')">✨</div>
+          <div class="deco-item" onclick="addSticker('💖')">💖</div>
+          <div class="deco-item" onclick="addSticker('🌙')">🌙</div>
+          <div class="deco-item" onclick="addSticker('🦋')">🦋</div>
+          <div class="deco-item" onclick="addSticker('🌹')">🌹</div>
+          <div class="deco-item" onclick="addSticker('🎀')">🎀</div>
+          <div class="deco-item" onclick="addSticker('👑')">👑</div>
+          <div class="deco-item" onclick="addSticker('💎')">💎</div>
+          <div class="deco-item" onclick="addSticker('🌟')">🌟</div>
+          <div class="deco-item" onclick="addSticker('🎵')">🎵</div>
+          <div class="deco-item" onclick="addSticker('🦄')">🦄</div>
+          <div class="deco-item" onclick="addSticker('🍒')">🍒</div>
+          <div class="deco-item" onclick="addSticker('🎊')">🎊</div>
+        </div>
+
+        <div class="divider" style="margin:0.75rem 0;"></div>
+        <div class="ctrl-label" style="margin-bottom:0.5rem;">Border Frame</div>
+        <div class="deco-scroll">
+          <div class="deco-item" onclick="addBorder('gold')" style="font-size:0.5rem;color:var(--gold);border-color:var(--gold);">Gold</div>
+          <div class="deco-item" onclick="addBorder('silver')" style="font-size:0.5rem;color:#C0C0C0;border-color:#C0C0C0;">Silver</div>
+          <div class="deco-item" onclick="addBorder('neon')" style="font-size:0.5rem;color:#0ff;border-color:#0ff;">Neon</div>
+          <div class="deco-item" onclick="addBorder('rose')" style="font-size:0.5rem;color:#D4788A;border-color:#D4788A;">Rose</div>
+          <div class="deco-item" onclick="addBorder('none')" style="font-size:0.5rem;">None</div>
+        </div>
+
+        <div class="divider" style="margin:0.75rem 0;"></div>
+        <div class="ctrl-label" style="margin-bottom:0.5rem;">Watermark & Caption</div>
+        <div class="wm-row">
+          <input class="wm-input" type="text" id="watermark-text" placeholder="Watermark / Caption..." value="LUMIÈRE Studio">
+          <button class="wm-toggle on" id="wm-toggle" onclick="toggleWatermark(this)"></button>
+        </div>
+        <div style="margin-top:0.5rem;display:flex;align-items:center;gap:0.5rem;">
+          <label style="font-size:0.6rem;color:var(--text-muted);">Tanggal Otomatis:</label>
+          <button class="wm-toggle on" id="date-toggle" onclick="toggleDate(this)"></button>
+        </div>
+      </div>
+
+      <!-- TEXT -->
+      <div class="edit-panel-content" id="edit-text">
+        <textarea class="text-input-area" id="custom-text" placeholder="Tulis teks di sini...&#10;e.g. Best Friends Forever 💕"></textarea>
+
+        <div class="ctrl-label" style="margin:0.5rem 0 0.4rem;">Pilih Font</div>
+        <div class="font-grid">
+          <div class="font-btn active" style="font-family:'Cormorant Garamond',serif;" onclick="setFont('cormorant', this)">Cormorant</div>
+          <div class="font-btn" style="font-family:'Dancing Script',cursive;" onclick="setFont('dancing', this)">Dancing</div>
+          <div class="font-btn" style="font-family:'Playfair Display',serif;" onclick="setFont('playfair', this)">Playfair</div>
+          <div class="font-btn" style="font-family:'Space Grotesk',sans-serif;" onclick="setFont('grotesk', this)">Grotesk</div>
+        </div>
+
+        <div class="ctrl-label" style="margin:0.5rem 0 0.4rem;">Warna Teks</div>
+        <div class="color-palette">
+          <div class="color-swatch selected" style="background:#FFFFFF;" onclick="setTextColor('#FFFFFF', this)"></div>
+          <div class="color-swatch" style="background:#C9A96E;" onclick="setTextColor('#C9A96E', this)"></div>
+          <div class="color-swatch" style="background:#D4788A;" onclick="setTextColor('#D4788A', this)"></div>
+          <div class="color-swatch" style="background:#7AC5A0;" onclick="setTextColor('#7AC5A0', this)"></div>
+          <div class="color-swatch" style="background:#0A0A0A;" onclick="setTextColor('#0A0A0A', this)"></div>
+          <div class="color-swatch" style="background:#C0C0C0;" onclick="setTextColor('#C0C0C0', this)"></div>
+          <div class="color-swatch" style="background:#FF6B9D;" onclick="setTextColor('#FF6B9D', this)"></div>
+          <div class="color-swatch" style="background:#00FFFF;" onclick="setTextColor('#00FFFF', this)"></div>
+        </div>
+
+        <div class="slider-row" style="margin-top:0.5rem;">
+          <div class="slider-label">Ukuran</div>
+          <input type="range" class="custom-range" min="12" max="80" value="28" oninput="setTextSize(this.value); this.nextElementSibling.textContent = this.value + 'px'">
+          <div class="slider-val">28px</div>
+        </div>
+
+        <button onclick="addTextOverlay()" style="margin-top:0.5rem;background:var(--surface);border:0.5px solid rgba(201,169,110,0.3);border-radius:var(--radius);padding:0.65rem;color:var(--gold);font-size:0.7rem;font-family:'Inter',sans-serif;cursor:pointer;width:100%;letter-spacing:0.1em;text-transform:uppercase;">
+          + Tambah Teks ke Foto
+        </button>
+      </div>
+
+      <!-- FRAME -->
+      <div class="edit-panel-content" id="edit-frame">
+        <div class="ctrl-label" style="margin-bottom:0.5rem;">Dekorasi Pinggiran</div>
+        <div class="deco-scroll">
+          <div class="deco-item" onclick="addFrameDeco('flowers')" style="font-size:0.55rem;color:var(--text-secondary);">🌺 Bunga</div>
+          <div class="deco-item" onclick="addFrameDeco('stars')" style="font-size:0.55rem;color:var(--gold);">✨ Glitter</div>
+          <div class="deco-item" onclick="addFrameDeco('hearts')" style="font-size:0.55rem;color:var(--rose);">💕 Hearts</div>
+          <div class="deco-item" onclick="addFrameDeco('ribbons')" style="font-size:0.55rem;color:var(--text-secondary);">🎀 Ribbon</div>
+          <div class="deco-item" onclick="addFrameDeco('doodle')" style="font-size:0.55rem;color:var(--text-secondary);">✏️ Doodle</div>
+          <div class="deco-item" onclick="addFrameDeco('none')" style="font-size:0.5rem;">None</div>
+        </div>
+
+        <div class="divider" style="margin:0.75rem 0;"></div>
+
+        <div class="ctrl-label" style="margin-bottom:0.5rem;">Teks Aesthetic Pinggiran</div>
+        <div class="deco-scroll">
+          <div class="deco-item" onclick="addEdgeText('forever')" style="font-size:0.5rem;font-family:'Dancing Script',cursive;color:var(--gold);">Forever</div>
+          <div class="deco-item" onclick="addEdgeText('love')" style="font-size:0.5rem;font-family:'Dancing Script',cursive;color:var(--rose);">Love</div>
+          <div class="deco-item" onclick="addEdgeText('memories')" style="font-size:0.5rem;font-family:'Dancing Script',cursive;color:var(--text-secondary);">Memories</div>
+          <div class="deco-item" onclick="addEdgeText('friends')" style="font-size:0.5rem;font-family:'Dancing Script',cursive;color:var(--mint);">Friends</div>
+          <div class="deco-item" onclick="addEdgeText('custom')" style="font-size:0.5rem;color:var(--text-muted);">Custom</div>
+        </div>
+      </div>
+
+      <button class="nav-btn-next" onclick="renderComposite()">Render Preview ↑</button>
+    </div>
+
+    <!-- ══ STEP 5: EXPORT ══ -->
+    <div class="step-panel" id="step-5">
+      <div style="text-align:center;">
+        <div class="success-icon">✦</div>
+        <div class="panel-title" style="text-align:center;">Foto Siap!</div>
+        <div class="panel-sub" style="text-align:center;margin-top:0.25rem;">Download atau bagikan karya Anda</div>
+      </div>
+
+      <div class="export-preview">
+        <canvas id="exportCanvas"></canvas>
+      </div>
+
+      <button class="export-btn-primary" onclick="downloadHD()">
+        <span>⬇</span> Download HD
+      </button>
+
+      <div class="export-grid">
+        <button class="export-btn" onclick="shareInstagram()">
+          <span class="export-icon">📸</span>
+          <span class="export-label">Instagram</span>
+          <span class="export-desc">Story & Feed</span>
+        </button>
+        <button class="export-btn" onclick="shareWhatsApp()">
+          <span class="export-icon">💬</span>
+          <span class="export-label">WhatsApp</span>
+          <span class="export-desc">Kirim langsung</span>
+        </button>
+        <button class="export-btn" onclick="generateQR()">
+          <span class="export-icon">⬛</span>
+          <span class="export-label">QR Code</span>
+          <span class="export-desc">Scan & download</span>
+        </button>
+        <button class="export-btn" onclick="printMode()">
+          <span class="export-icon">🖨</span>
+          <span class="export-label">Print</span>
+          <span class="export-desc">Cetak langsung</span>
+        </button>
+      </div>
+
+      <button onclick="startNew()" style="background:transparent;border:0.5px solid rgba(255,255,255,0.1);border-radius:var(--radius);padding:0.75rem;color:var(--text-muted);font-size:0.65rem;font-family:'Inter',sans-serif;cursor:pointer;width:100%;letter-spacing:0.15em;text-transform:uppercase;transition:all 0.2s;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">
+        ↺ Buat Foto Baru
+      </button>
+    </div>
+
+  </div><!-- end app-content -->
+
+  <div class="app-bottom-nav" id="app-bottom-nav">
+    <button class="nav-btn-back" id="btn-back" onclick="prevStep()" style="display:none;">← Kembali</button>
+    <button class="nav-btn-next" id="btn-next" onclick="nextStep()">Pilih Template →</button>
+  </div>
+</div><!-- end app -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- HIDDEN CANVASES -->
+<canvas id="filterCanvas" class="filter-canvas-hidden"></canvas>
+
+<script>
+// ══════════════════════════════
+// STATE
+// ══════════════════════════════
+const state = {
+  step: 1,
+  layout: null,
+  template: null,
+  shots: [],
+  adjustments: { brightness: 0, contrast: 0, saturation: 0, sharpness: 0, vignette: 0 },
+  tone: 'none',
+  stickers: [],
+  texts: [],
+  border: 'none',
+  frameDeco: 'none',
+  edgeText: null,
+  watermark: true,
+  showDate: true,
+  watermarkText: 'LUMIÈRE Studio',
+  font: 'cormorant',
+  textColor: '#FFFFFF',
+  textSize: 28,
+  cameraFilter: 'none',
+  mirrorMode: true,
+  guideGrid: false,
+  poseGuide: false,
+  timerSecs: 0,
+  captureInterval: null,
+  stream: null
+};
+
+const SHOTS_NEEDED = { single: 1, quad: 4, strip: 6 };
+
+// ══════════════════════════════
+// TEMPLATES DATA
+// ══════════════════════════════
+const templates = [
+  // LUXURY
+  { id:'t01', name:'Gold Noir', cat:'luxury', bg:'linear-gradient(160deg,#1a1206,#0a0a0a,#2a1f00)', border:'#C9A96E', accent:'#C9A96E' },
+  { id:'t02', name:'Onyx Pearl', cat:'luxury', bg:'linear-gradient(135deg,#0a0a0a,#1a1a1a,#2a2a2a)', border:'#E8E8E8', accent:'#C0C0C0' },
+  { id:'t03', name:'Rose Gold Elite', cat:'luxury', bg:'linear-gradient(160deg,#1a0f0f,#2a1515,#0a0505)', border:'#D4A0A0', accent:'#C9786E' },
+  { id:'t04', name:'Champagne', cat:'luxury', bg:'linear-gradient(135deg,#1f1a0a,#2a2310,#15120a)', border:'#E8D58B', accent:'#D4B870' },
+  { id:'t05', name:'Black Diamond', cat:'luxury', bg:'linear-gradient(160deg,#050505,#0f0f0f,#1a1a1a)', border:'#7AC5A0', accent:'#5AA080' },
+  { id:'t06', name:'Velvet Night', cat:'luxury', bg:'linear-gradient(135deg,#0f0a1a,#1a0f2a,#0a0510)', border:'#9B70D4', accent:'#8B60C4' },
+  { id:'t07', name:'Ivory Luxe', cat:'luxury', bg:'linear-gradient(160deg,#f5f0e8,#e8e0d0,#d5ccc0)', border:'#8B6914', accent:'#C9A96E' },
+  { id:'t08', name:'Matte Gold', cat:'luxury', bg:'linear-gradient(135deg,#1a1506,#252010,#0a0a00)', border:'#B89A50', accent:'#A08040' },
+
+  // CUTE
+  { id:'t09', name:'Sakura Bloom', cat:'cute', bg:'linear-gradient(160deg,#fce4ec,#f8bbd9,#ffe0f0)', border:'#E91E8C', accent:'#FF69B4' },
+  { id:'t10', name:'Pastel Dream', cat:'cute', bg:'linear-gradient(135deg,#e8f4fd,#f0e8fd,#fde8f4)', border:'#D0A0D0', accent:'#C080C0' },
+  { id:'t11', name:'Bunny Soft', cat:'cute', bg:'linear-gradient(160deg,#fff0f5,#ffe8ef,#ffd0e0)', border:'#FFB0C8', accent:'#FF8098' },
+  { id:'t12', name:'Cotton Candy', cat:'cute', bg:'linear-gradient(135deg,#f0d8ff,#d8eaff,#ffe0f8)', border:'#C0A0E0', accent:'#B090D0' },
+  { id:'t13', name:'Baby Blue', cat:'cute', bg:'linear-gradient(160deg,#e0f0ff,#d0e8ff,#c0e0ff)', border:'#80B0E0', accent:'#6090D0' },
+  { id:'t14', name:'Lemon Sweet', cat:'cute', bg:'linear-gradient(135deg,#fffde8,#fff8c0,#ffeda0)', border:'#D4B800', accent:'#C4A800' },
+  { id:'t15', name:'Mint Freshie', cat:'cute', bg:'linear-gradient(160deg,#e0fff0,#c8f5e4,#b0ead8)', border:'#60C090', accent:'#40A870' },
+  { id:'t16', name:'Peach Bliss', cat:'cute', bg:'linear-gradient(135deg,#fff0e8,#ffe4d0,#ffd4b8)', border:'#D09060', accent:'#C08050' },
+
+  // KOREAN
+  { id:'t17', name:'Seoul Cafe', cat:'korean', bg:'linear-gradient(160deg,#f0ece8,#e8e0d8,#ddd5c8)', border:'#8B7355', accent:'#7B6345' },
+  { id:'t18', name:'K-Film Strip', cat:'korean', bg:'linear-gradient(135deg,#f5f5f5,#ececec,#e0e0e0)', border:'#333333', accent:'#222222' },
+  { id:'t19', name:'Hana Minimal', cat:'korean', bg:'linear-gradient(160deg,#fafafa,#f5f5f5,#efefef)', border:'#CCCCCC', accent:'#999999' },
+  { id:'t20', name:'Jeju Island', cat:'korean', bg:'linear-gradient(135deg,#e8f5e9,#dff0e0,#d0e8d0)', border:'#4CAF50', accent:'#388E3C' },
+  { id:'t21', name:'Hanbok Pink', cat:'korean', bg:'linear-gradient(160deg,#fce4ec,#f8d0e0,#f0c0d0)', border:'#E91E63', accent:'#C2185B' },
+  { id:'t22', name:'Neo Seoul', cat:'korean', bg:'linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)', border:'#E94560', accent:'#D03550' },
+  { id:'t23', name:'Gwanghwamun', cat:'korean', bg:'linear-gradient(160deg,#1c1c1c,#2a2a2a,#141414)', border:'#C9A96E', accent:'#B89050' },
+  { id:'t24', name:'Boba Tea', cat:'korean', bg:'linear-gradient(135deg,#d4a373,#c8965a,#b88040)', border:'#fff',accent:'#ffffffaa' },
+
+  // VINTAGE
+  { id:'t25', name:'Kodak 200', cat:'vintage', bg:'linear-gradient(160deg,#f5e6d3,#e8d5b8,#d4bf98)', border:'#8B6914', accent:'#7A5A10' },
+  { id:'t26', name:'Polaroid', cat:'vintage', bg:'linear-gradient(135deg,#f8f0e8,#f0e4d4,#e4d4be)', border:'#666666', accent:'#444444' },
+  { id:'t27', name:'Film Noir', cat:'vintage', bg:'linear-gradient(160deg,#1a1510,#221e15,#2a2418)', border:'#8B7355', accent:'#7A6040' },
+  { id:'t28', name:'Sepia Dreams', cat:'vintage', bg:'linear-gradient(135deg,#c8a87a,#b89060,#a87848)', border:'#6B4423', accent:'#5B3413' },
+  { id:'t29', name:'Retro 70s', cat:'vintage', bg:'linear-gradient(160deg,#d4893a,#c87830,#b86820)', border:'#8B4513', accent:'#7B3503' },
+  { id:'t30', name:'Lomography', cat:'vintage', bg:'linear-gradient(135deg,#2d1a3a,#3d2a4a,#1e0f2a)', border:'#E040FB', accent:'#D030EB' },
+  { id:'t31', name:'Brownie Box', cat:'vintage', bg:'linear-gradient(160deg,#8B7355,#7a6245,#695535)', border:'#D4C4A0', accent:'#C4B090' },
+  { id:'t32', name:'Faded Memory', cat:'vintage', bg:'linear-gradient(135deg,#d0c8b8,#c8c0a8,#b8b098)', border:'#888880', accent:'#787870' },
+
+  // MINIMAL
+  { id:'t33', name:'Pure White', cat:'minimal', bg:'#FFFFFF', border:'#EEEEEE', accent:'#333333' },
+  { id:'t34', name:'Warm Gray', cat:'minimal', bg:'linear-gradient(135deg,#f0ece8,#e8e4e0)', border:'#CCCCCC', accent:'#888888' },
+  { id:'t35', name:'Ink Line', cat:'minimal', bg:'#FAFAFA', border:'#1a1a1a', accent:'#1a1a1a' },
+  { id:'t36', name:'Sand Dune', cat:'minimal', bg:'linear-gradient(160deg,#f5efe8,#ede4d8,#e4d8c8)', border:'#C4A870', accent:'#B49860' },
+  { id:'t37', name:'Arctic', cat:'minimal', bg:'linear-gradient(135deg,#f0f8ff,#e8f4ff,#ddeeff)', border:'#A0C4E0', accent:'#80A4C0' },
+  { id:'t38', name:'Paper', cat:'minimal', bg:'linear-gradient(160deg,#fdf8f0,#f8f0e4,#f0e8d8)', border:'#D4C8B0', accent:'#B4A890' },
+  { id:'t39', name:'Studio Grey', cat:'minimal', bg:'linear-gradient(135deg,#e8e8e8,#dcdcdc,#d0d0d0)', border:'#999999', accent:'#555555' },
+  { id:'t40', name:'Zen', cat:'minimal', bg:'linear-gradient(160deg,#f0f0f0,#e8e8e8)', border:'#C0B090', accent:'#A09070' },
+
+  // DARK
+  { id:'t41', name:'Obsidian', cat:'dark', bg:'linear-gradient(135deg,#050505,#0a0a0a,#050505)', border:'#C9A96E', accent:'#B89050' },
+  { id:'t42', name:'Midnight Blue', cat:'dark', bg:'linear-gradient(160deg,#000814,#001230,#000520)', border:'#1B4FFF', accent:'#0B3FEF' },
+  { id:'t43', name:'Dark Matter', cat:'dark', bg:'linear-gradient(135deg,#0f0f1a,#1a1a2e,#0a0a14)', border:'#7C4DFF', accent:'#6C3DEF' },
+  { id:'t44', name:'Carbon', cat:'dark', bg:'linear-gradient(160deg,#1a1a1a,#222222,#111111)', border:'#444444', accent:'#333333' },
+  { id:'t45', name:'Oil Slick', cat:'dark', bg:'linear-gradient(135deg,#0a0f1a,#150f1a,#1a0f15)', border:'#00E5FF', accent:'#00C5DF' },
+  { id:'t46', name:'Abyss', cat:'dark', bg:'#000000', border:'#1a1a1a', accent:'#C9A96E' },
+  { id:'t47', name:'Shadow Luxe', cat:'dark', bg:'linear-gradient(160deg,#0f0a05,#1a1205,#0a0800)', border:'#C9A96E', accent:'#D4B870' },
+  { id:'t48', name:'Noir Film', cat:'dark', bg:'linear-gradient(135deg,#1a1a1a,#0f0f0f,#222)', border:'#FFFFFF', accent:'#EEEEEE' },
+
+  // COLORFUL
+  { id:'t49', name:'Electric Pop', cat:'colorful', bg:'linear-gradient(160deg,#FF006E,#FB5607,#FFBE0B)', border:'#fff', accent:'#fff' },
+  { id:'t50', name:'Neon Rave', cat:'colorful', bg:'linear-gradient(135deg,#0a0014,#14002a,#002814)', border:'#39FF14', accent:'#00FFFF' },
+  { id:'t51', name:'Sunset Vibes', cat:'colorful', bg:'linear-gradient(160deg,#FF6B6B,#FFC1CC,#FFE66D)', border:'#fff', accent:'#fff' },
+  { id:'t52', name:'Ocean Burst', cat:'colorful', bg:'linear-gradient(135deg,#1CB5E0,#000851)', border:'#00E5FF', accent:'#7BFFFF' },
+  { id:'t53', name:'Aurora', cat:'colorful', bg:'linear-gradient(160deg,#1FA2FF,#12D8FA,#A6FFCB)', border:'#fff', accent:'#fff' },
+  { id:'t54', name:'Candy Pop', cat:'colorful', bg:'linear-gradient(135deg,#FF9A9E,#FECFEF,#FECFEF)', border:'#FF69B4', accent:'#FF1493' },
+  { id:'t55', name:'Rainbow Dream', cat:'colorful', bg:'linear-gradient(160deg,#FF0080,#FF8C00,#FFD700,#00FF00,#0080FF)', border:'#fff', accent:'#fff' },
+  { id:'t56', name:'Galaxy', cat:'colorful', bg:'linear-gradient(135deg,#2C3E50,#4CA1AF)', border:'#E8D5B0', accent:'#D4C0A0' },
+
+  // BIRTHDAY
+  { id:'t57', name:'Gold Birthday', cat:'birthday', bg:'linear-gradient(160deg,#1a1206,#2a2010,#1a1206)', border:'#FFD700', accent:'#FFA500' },
+  { id:'t58', name:'Party Pink', cat:'birthday', bg:'linear-gradient(135deg,#ff9a9e,#fecfef,#feada6)', border:'#FF1493', accent:'#FF69B4' },
+  { id:'t59', name:'Confetti Fun', cat:'birthday', bg:'linear-gradient(160deg,#f8f9fa,#ffffff,#f0f0f0)', border:'#FF6B6B', accent:'#4ECDC4' },
+  { id:'t60', name:'Midnight Bday', cat:'birthday', bg:'linear-gradient(135deg,#1a0a2e,#2e1a4a,#0a0414)', border:'#FFD700', accent:'#FFA500' },
+  { id:'t61', name:'Balloon Up', cat:'birthday', bg:'linear-gradient(160deg,#E8F5E9,#DCEDC8,#F3E5F5)', border:'#AB47BC', accent:'#8E24AA' },
+  { id:'t62', name:'Cake Day', cat:'birthday', bg:'linear-gradient(135deg,#FFF3E0,#FFE0B2,#FFCC80)', border:'#FF6D00', accent:'#E65100' },
+  { id:'t63', name:'Glitter Bday', cat:'birthday', bg:'linear-gradient(160deg,#0f0f0f,#1a1a1a)', border:'#FFD700', accent:'#C9A96E' },
+  { id:'t64', name:'Rainbow Bday', cat:'birthday', bg:'linear-gradient(135deg,#FF61D2,#FE9090,#FF61D2)', border:'#fff', accent:'#fff' },
+
+  // WEDDING
+  { id:'t65', name:'Ivory Romance', cat:'wedding', bg:'linear-gradient(160deg,#FDF6EC,#FAF0E6,#F5E8D8)', border:'#C9A96E', accent:'#B89060' },
+  { id:'t66', name:'Rose Petal', cat:'wedding', bg:'linear-gradient(135deg,#FDE8EC,#F8D4DA,#F0C4CC)', border:'#C2185B', accent:'#AD1457' },
+  { id:'t67', name:'Garden Party', cat:'wedding', bg:'linear-gradient(160deg,#F1F8E9,#E8F5E9,#DCEDC8)', border:'#558B2F', accent:'#33691E' },
+  { id:'t68', name:'Midnight Vow', cat:'wedding', bg:'linear-gradient(135deg,#0f0a1a,#1a0f2a,#0a0514)', border:'#E8D5B0', accent:'#C9A96E' },
+  { id:'t69', name:'Blush Luxe', cat:'wedding', bg:'linear-gradient(160deg,#F8E8E8,#F0D8D8,#E8C8C8)', border:'#C9A96E', accent:'#B89060' },
+  { id:'t70', name:'Marble Vow', cat:'wedding', bg:'linear-gradient(135deg,#F5F5F5,#EEEEEE,#E0E0E0)', border:'#C9A96E', accent:'#A07830' },
+  { id:'t71', name:'Floral Dream', cat:'wedding', bg:'linear-gradient(160deg,#FFF8F0,#FFF0E8,#FFE8E0)', border:'#E91E63', accent:'#C2185B' },
+  { id:'t72', name:'Gold Vow', cat:'wedding', bg:'linear-gradient(135deg,#1a1506,#252010,#1a1506)', border:'#FFD700', accent:'#C9A96E' },
+
+  // GRADUATION
+  { id:'t73', name:'Academic Gold', cat:'graduation', bg:'linear-gradient(160deg,#1a1206,#0a0a0a,#2a1f00)', border:'#C9A96E', accent:'#B89050' },
+  { id:'t74', name:'Campus Blue', cat:'graduation', bg:'linear-gradient(135deg,#003161,#014090,#003161)', border:'#FFD700', accent:'#FFA500' },
+  { id:'t75', name:'Achievement', cat:'graduation', bg:'linear-gradient(160deg,#0f1a0a,#1a2a10,#0a140a)', border:'#4CAF50', accent:'#388E3C' },
+  { id:'t76', name:'Valedictorian', cat:'graduation', bg:'linear-gradient(135deg,#f5f5f5,#eeeeee)', border:'#333', accent:'#C9A96E' },
+  { id:'t77', name:'Scholar Dark', cat:'graduation', bg:'linear-gradient(160deg,#0a0a14,#14141e)', border:'#C9A96E', accent:'#D4B870' },
+  { id:'t78', name:'Ivy League', cat:'graduation', bg:'linear-gradient(135deg,#2E7D32,#1B5E20,#2E7D32)', border:'#FFD700', accent:'#C9A96E' },
+  { id:'t79', name:'Magna Cum Laude', cat:'graduation', bg:'linear-gradient(160deg,#FFF8E1,#FFF3CC,#FFE8A0)', border:'#F57F17', accent:'#E65100' },
+  { id:'t80', name:'Future Leader', cat:'graduation', bg:'linear-gradient(135deg,#1a0a2e,#2e1a4a)', border:'#E040FB', accent:'#D030EB' },
+
+  // CINEMATIC
+  { id:'t81', name:'Teal & Orange', cat:'cinematic', bg:'linear-gradient(160deg,#0a1a2e,#142030,#0a1520)', border:'#E87840', accent:'#D46830' },
+  { id:'t82', name:'Blade Runner', cat:'cinematic', bg:'linear-gradient(135deg,#0a0a1a,#1a0a2a,#0a1a2a)', border:'#FF6B35', accent:'#00E5FF' },
+  { id:'t83', name:'Grand Budapest', cat:'cinematic', bg:'linear-gradient(160deg,#D4375F,#E84D75,#D4375F)', border:'#F8D5E0', accent:'#fff' },
+  { id:'t84', name:'Matrix', cat:'cinematic', bg:'linear-gradient(135deg,#000000,#001400,#000000)', border:'#00FF41', accent:'#00CC33' },
+  { id:'t85', name:'Kubrick', cat:'cinematic', bg:'linear-gradient(160deg,#F5F5F5,#EEEEEE,#E0E0E0)', border:'#E53935', accent:'#B71C1C' },
+  { id:'t86', name:'Wong Kar-wai', cat:'cinematic', bg:'linear-gradient(135deg,#1a0808,#2a1010,#1a0808)', border:'#FF6B35', accent:'#FF4500' },
+  { id:'t87', name:'Tarantino', cat:'cinematic', bg:'linear-gradient(160deg,#1a0a00,#2a1500,#3a2000)', border:'#E53935', accent:'#B71C1C' },
+  { id:'t88', name:'Nolan Dark', cat:'cinematic', bg:'linear-gradient(135deg,#0f1520,#1a2030,#0a1018)', border:'#78909C', accent:'#546E7A' },
+  { id:'t89', name:'Wes Anderson', cat:'cinematic', bg:'linear-gradient(160deg,#FFF8DC,#FFE4B5,#FFDAB9)', border:'#E91E63', accent:'#C2185B' },
+  { id:'t90', name:'Sci-Fi Blue', cat:'cinematic', bg:'linear-gradient(135deg,#000033,#001166,#000033)', border:'#00E5FF', accent:'#1DE9B6' },
+  { id:'t91', name:'Western Dust', cat:'cinematic', bg:'linear-gradient(160deg,#8B4513,#A0522D,#6B3410)', border:'#FFD700', accent:'#C9A96E' },
+  { id:'t92', name:'Anime Dusk', cat:'cinematic', bg:'linear-gradient(135deg,#FF7043,#FF8A65,#FFAB91)', border:'#4A148C', accent:'#6A1FAC' },
+];
+
+// Filter extra minimal templates
+const extraTemplates = Array.from({length: 12}, (_, i) => ({
+  id: `extra${i+1}`,
+  name: `Design ${93+i}`,
+  cat: ['luxury','cute','korean','vintage','minimal','dark','colorful','birthday','wedding','graduation','cinematic','minimal'][i % 12],
+  bg: `hsl(${i*30},40%,${i%2?15:85}%)`,
+  border: i%2 ? '#C9A96E' : '#888',
+  accent: '#C9A96E'
+}));
+const allTemplates = [...templates, ...extraTemplates];
+
+let filteredTemplates = [...allTemplates];
+let activeCategory = 'all';
+
+// ══════════════════════════════
+// LOADER
+// ══════════════════════════════
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('hidden');
+  }, 2500);
+});
+
+// ══════════════════════════════
+// APP INIT
+// ══════════════════════════════
+function startApp() {
+  document.getElementById('landing').style.display = 'none';
+  document.getElementById('app').classList.add('active');
+  renderTemplates();
+  initCamera();
+  updateStepUI();
+}
+
+function startNew() {
+  state.shots = [];
+  state.stickers = [];
+  state.texts = [];
+  state.tone = 'none';
+  state.adjustments = { brightness: 0, contrast: 0, saturation: 0, sharpness: 0, vignette: 0 };
+  goToStep(1);
+}
+
+// ══════════════════════════════
+// STEP NAVIGATION
+// ══════════════════════════════
+function goToStep(n) {
+  if (n < 1 || n > 5) return;
+  if (n === 3 && !state.layout) { showToast('Pilih layout dulu'); return; }
+  if (n === 4 && state.shots.length < SHOTS_NEEDED[state.layout]) { showToast('Ambil semua foto dulu'); return; }
+  if (n === 5 && state.shots.length < SHOTS_NEEDED[state.layout]) { showToast('Selesaikan foto dulu'); return; }
+
+  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('step-' + n).classList.add('active');
+  state.step = n;
+  updateStepUI();
+
+  if (n === 4) renderComposite();
+  if (n === 5) finalizeExport();
+}
+
+function nextStep() {
+  if (state.step === 3 && state.shots.length < SHOTS_NEEDED[state.layout]) {
+    showToast(`Butuh ${SHOTS_NEEDED[state.layout]} foto. Sudah: ${state.shots.length}`);
+    return;
+  }
+  goToStep(state.step + 1);
+}
+
+function prevStep() {
+  goToStep(state.step - 1);
+}
+
+function updateStepUI() {
+  const n = state.step;
+  // dots
+  for (let i = 1; i <= 5; i++) {
+    const dot = document.getElementById('step-dot-' + i);
+    dot.className = 'app-step';
+    if (i === n) dot.classList.add('active');
+    else if (i < n) dot.classList.add('done');
+  }
+  // back/next
+  const back = document.getElementById('btn-back');
+  const next = document.getElementById('btn-next');
+  const bottomNav = document.getElementById('app-bottom-nav');
+
+  if (n === 5) { bottomNav.style.display = 'none'; return; }
+  bottomNav.style.display = 'flex';
+  back.style.display = n > 1 ? 'block' : 'none';
+
+  const labels = ['Pilih Template →', 'Kamera →', 'Edit →', 'Selesai →'];
+  next.textContent = labels[n - 1] || 'Lanjut →';
+}
+
+// ══════════════════════════════
+// LAYOUT SELECTION
+// ══════════════════════════════
+function selectLayout(type) {
+  state.layout = type;
+  document.querySelectorAll('.layout-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('layout-' + type).classList.add('selected');
+
+  // Preview
+  const box = document.getElementById('layout-preview-box');
+  const needed = SHOTS_NEEDED[type];
+  const labels = { single: '1 foto portrait penuh', quad: '4 foto 2×2 grid', strip: '6 foto strip vertikal' };
+  box.innerHTML = `<div style="text-align:center"><div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--gold);">${needed}</div><div style="font-size:0.65rem;color:var(--text-muted);letter-spacing:0.1em;margin-top:0.25rem;">${labels[type]}</div></div>`;
+
+  // Reset shots
+  state.shots = [];
+  renderShotSlots();
+}
+
+// ══════════════════════════════
+// TEMPLATES
+// ══════════════════════════════
+function renderTemplates() {
+  const grid = document.getElementById('template-grid');
+  grid.innerHTML = filteredTemplates.map(t => `
+    <div class="template-card ${state.template?.id === t.id ? 'selected' : ''}" onclick="selectTemplate('${t.id}')" id="tcard-${t.id}">
+      <div class="template-bg" style="background:${t.bg};min-height:180px;border:3px solid ${t.border}22;">
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:0.5rem;">
+          <div style="width:60%;aspect-ratio:3/4;background:rgba(0,0,0,0.2);border-radius:4px;border:1px solid ${t.border}44;"></div>
+        </div>
+      </div>
+      <div class="template-label">${t.name}</div>
+      <div class="template-check">✓</div>
+    </div>
+  `).join('');
+}
+
+function selectTemplate(id) {
+  state.template = allTemplates.find(t => t.id === id);
+  document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+  const card = document.getElementById('tcard-' + id);
+  if (card) card.classList.add('selected');
+  showToast('Template dipilih: ' + state.template.name);
+}
+
+function setCategory(cat, btn) {
+  activeCategory = cat;
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  filteredTemplates = cat === 'all' ? [...allTemplates] : allTemplates.filter(t => t.cat === cat);
+  renderTemplates();
+}
+
+function filterTemplates(q) {
+  const query = q.toLowerCase();
+  filteredTemplates = allTemplates.filter(t =>
+    (activeCategory === 'all' || t.cat === activeCategory) &&
+    (t.name.toLowerCase().includes(query) || t.cat.includes(query))
+  );
+  renderTemplates();
+}
+
+// ══════════════════════════════
+// CAMERA
+// ══════════════════════════════
+async function initCamera() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+      audio: false
+    });
+    state.stream = stream;
+    const video = document.getElementById('videoEl');
+    video.srcObject = stream;
+  } catch (e) {
+    showToast('Kamera tidak tersedia. Gunakan browser modern.');
+    console.warn('Camera error:', e);
+  }
+}
+
+function renderShotSlots() {
+  const row = document.getElementById('shots-row');
+  const needed = SHOTS_NEEDED[state.layout] || 1;
+  document.getElementById('shots-needed').textContent = needed;
+  document.getElementById('shots-count').textContent = state.shots.length;
+
+  row.innerHTML = Array.from({ length: needed }, (_, i) => {
+    const shot = state.shots[i];
+    return `<div class="shot-thumb ${shot ? 'filled' : ''}" onclick="retakeShot(${i})">
+      ${shot ? `<img src="${shot}" alt="Shot ${i+1}">` : `<div class="shot-num">${i+1}</div>`}
+    </div>`;
+  }).join('');
+}
+
+function setTimer(s, btn) {
+  state.timerSecs = s;
+  document.querySelectorAll('.timer-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function capturePhoto() {
+  if (!state.layout) { showToast('Pilih layout dulu'); goToStep(1); return; }
+  const needed = SHOTS_NEEDED[state.layout];
+  if (state.shots.length >= needed) { showToast('Semua foto sudah diambil!'); return; }
+
+  const btn = document.getElementById('shutter-btn');
+  btn.style.pointerEvents = 'none';
+
+  if (state.timerSecs > 0) {
+    startCountdown(state.timerSecs, () => {
+      doCapture();
+      btn.style.pointerEvents = 'auto';
+    });
+  } else {
+    doCapture();
+    btn.style.pointerEvents = 'auto';
+  }
+}
+
+function startCountdown(secs, cb) {
+  const el = document.getElementById('countdown');
+  let n = secs;
+  el.textContent = n;
+  el.classList.add('visible');
+  const iv = setInterval(() => {
+    n--;
+    if (n > 0) {
+      el.textContent = n;
+    } else {
+      clearInterval(iv);
+      el.classList.remove('visible');
+      cb();
+    }
+  }, 1000);
+}
+
+function doCapture() {
+  const video = document.getElementById('videoEl');
+  const canvas = document.getElementById('snapCanvas');
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = video.videoWidth || 640;
+  canvas.height = video.videoHeight || 480;
+
+  // Flash
+  const flash = document.getElementById('flash-overlay');
+  flash.classList.add('flash');
+  setTimeout(() => flash.classList.remove('flash'), 150);
+
+  if (state.mirrorMode) {
+    ctx.scale(-1, 1);
+    ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+  } else {
+    ctx.drawImage(video, 0, 0);
+  }
+
+  applyCameraFilter(ctx, canvas.width, canvas.height);
+  const dataURL = canvas.toDataURL('image/jpeg', 0.92);
+  state.shots.push(dataURL);
+  renderShotSlots();
+
+  const needed = SHOTS_NEEDED[state.layout];
+  if (state.shots.length >= needed) {
+    showToast('✓ Semua foto diambil! Lanjut edit →');
+  }
+}
+
+function applyCameraFilter(ctx, w, h) {
+  if (state.cameraFilter === 'none') return;
+  const img = ctx.getImageData(0, 0, w, h);
+  const d = img.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const r = d[i], g = d[i+1], b = d[i+2];
+    if (state.cameraFilter === 'warm') { d[i] = Math.min(255, r+20); d[i+2] = Math.max(0, b-20); }
+    else if (state.cameraFilter === 'cool') { d[i] = Math.max(0, r-20); d[i+2] = Math.min(255, b+20); }
+    else if (state.cameraFilter === 'bw') { const gr = 0.299*r+0.587*g+0.114*b; d[i]=d[i+1]=d[i+2]=gr; }
+    else if (state.cameraFilter === 'vintage') { d[i]=Math.min(255,r*1.1+20); d[i+1]=Math.max(0,g*0.9); d[i+2]=Math.max(0,b*0.8); }
+    else if (state.cameraFilter === 'beauty') { d[i]=Math.min(255,r*1.05+5); d[i+1]=Math.min(255,g*1.05+5); d[i+2]=Math.min(255,b*1.05+5); }
+  }
+  ctx.putImageData(img, 0, 0);
+}
+
+function setCameraFilter(filter, el) {
+  state.cameraFilter = filter;
+  document.querySelectorAll('#camera-filters .deco-item').forEach(d => d.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function toggleGuide() {
+  state.guideGrid = !state.guideGrid;
+  document.getElementById('guide-grid').classList.toggle('visible', state.guideGrid);
+  document.getElementById('btn-guide').classList.toggle('active', state.guideGrid);
+}
+
+function togglePose() {
+  state.poseGuide = !state.poseGuide;
+  document.getElementById('pose-guide').classList.toggle('visible', state.poseGuide);
+  document.getElementById('btn-pose').classList.toggle('active', state.poseGuide);
+}
+
+function toggleMirror() {
+  state.mirrorMode = !state.mirrorMode;
+  document.getElementById('videoEl').style.transform = state.mirrorMode ? 'scaleX(-1)' : 'none';
+  document.getElementById('btn-mirror').classList.toggle('active', state.mirrorMode);
+}
+
+function retakeShot(idx) {
+  if (state.shots[idx]) {
+    if (confirm('Ambil ulang foto ini?')) {
+      state.shots.splice(idx, 1);
+      renderShotSlots();
+    }
+  }
+}
+
+function clearShots() {
+  state.shots = [];
+  renderShotSlots();
+}
+
+// ══════════════════════════════
+// EDITING
+// ══════════════════════════════
+function setEditTab(tab, btn) {
+  document.querySelectorAll('.edit-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.edit-panel-content').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('edit-' + tab).classList.add('active');
+}
+
+function adjustImage(prop, val) {
+  state.adjustments[prop] = parseInt(val);
+  renderComposite();
+}
+
+function applyTone(tone, btn) {
+  state.tone = tone;
+  document.querySelectorAll('.tone-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderComposite();
+}
+
+function addSticker(emoji) {
+  state.stickers.push({ emoji, x: 0.5, y: 0.5, size: 40 });
+  renderComposite();
+  showToast(emoji + ' ditambahkan');
+}
+
+function addBorder(type) {
+  state.border = type;
+  renderComposite();
+}
+
+function addFrameDeco(type) {
+  state.frameDeco = type;
+  renderComposite();
+}
+
+function addEdgeText(type) {
+  state.edgeText = type;
+  renderComposite();
+}
+
+function toggleWatermark(btn) {
+  state.watermark = !state.watermark;
+  btn.classList.toggle('on', state.watermark);
+  renderComposite();
+}
+
+function toggleDate(btn) {
+  state.showDate = !state.showDate;
+  btn.classList.toggle('on', state.showDate);
+  renderComposite();
+}
+
+function setFont(font, btn) {
+  state.font = font;
+  document.querySelectorAll('.font-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function setTextColor(color, el) {
+  state.textColor = color;
+  document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function setTextSize(s) { state.textSize = parseInt(s); }
+
+function addTextOverlay() {
+  const txt = document.getElementById('custom-text').value.trim();
+  if (!txt) { showToast('Tulis teks dulu'); return; }
+  state.texts.push({
+    content: txt,
+    font: state.font,
+    color: state.textColor,
+    size: state.textSize,
+    x: 0.5, y: 0.85
+  });
+  renderComposite();
+  showToast('Teks ditambahkan!');
+}
+
+// ══════════════════════════════
+// CANVAS COMPOSITE
+// ══════════════════════════════
+function renderComposite() {
+  const canvas = document.getElementById('compositeCanvas');
+  drawComposite(canvas, 400, getCompositeHeight(400));
+}
+
+function getCompositeHeight(w) {
+  if (state.layout === 'strip') return w * 2.5;
+  if (state.layout === 'quad') return w * 1.2;
+  return w * 1.35;
+}
+
+function getCanvasFontName(font) {
+  const map = {
+    'cormorant': 'Cormorant Garamond',
+    'dancing': 'Dancing Script',
+    'playfair': 'Playfair Display',
+    'grotesk': 'Space Grotesk'
+  };
+  return map[font] || 'Cormorant Garamond';
+}
+
+function drawComposite(canvas, w, h) {
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  const t = state.template;
+
+  // BG
+  if (t) {
+    if (t.bg.startsWith('linear-gradient') || t.bg.startsWith('radial-gradient')) {
+      const grad = parseGradient(ctx, t.bg, w, h);
+      if (grad) { ctx.fillStyle = grad; ctx.fillRect(0, 0, w, h); }
+      else { ctx.fillStyle = '#1a1a1a'; ctx.fillRect(0, 0, w, h); }
+    } else {
+      ctx.fillStyle = t.bg;
+      ctx.fillRect(0, 0, w, h);
+    }
+  } else {
+    ctx.fillStyle = '#1a1a1a';
+    ctx.fillRect(0, 0, w, h);
+  }
+
+  // Draw photos
+  const pad = 20;
+  drawPhotos(ctx, w, h, pad);
+
+  // Apply tone overlay
+  applyToneOverlay(ctx, w, h);
+
+  // Adjustments
+  applyAdjustments(ctx, w, h);
+
+  // Stickers
+  state.stickers.forEach(s => {
+    ctx.font = `${s.size}px serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(s.emoji, s.x * w, s.y * h);
+  });
+
+  // Frame deco
+  drawFrameDeco(ctx, w, h);
+
+  // Border
+  drawBorder(ctx, w, h);
+
+  // Texts
+  state.texts.forEach(txt => {
+    const fontName = getCanvasFontName(txt.font);
+    ctx.font = `${txt.size}px "${fontName}"`;
+    ctx.fillStyle = txt.color;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.shadowColor = 'rgba(0,0,0,0.5)';
+    ctx.shadowBlur = 6;
+    ctx.fillText(txt.content, txt.x * w, txt.y * h);
+    ctx.shadowBlur = 0;
+  });
+
+  // Watermark + Date
+  if (state.watermark || state.showDate) {
+    ctx.font = '11px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.fillStyle = t ? t.accent + 'CC' : 'rgba(201,169,110,0.8)';
+    let wText = '';
+    if (state.watermark) wText += document.getElementById('watermark-text')?.value || 'LUMIÈRE Studio';
+    if (state.showDate && state.watermark) wText += '  •  ';
+    if (state.showDate) wText += new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    ctx.fillText(wText, w / 2, h - 6);
+  }
+}
+
+function parseGradient(ctx, gradStr, w, h) {
+  try {
+    const isLinear = gradStr.startsWith('linear-gradient');
+    let grad;
+    if (isLinear) {
+      const angleMatch = gradStr.match(/(\d+)deg/);
+      const angle = angleMatch ? parseInt(angleMatch[1]) * Math.PI / 180 : Math.PI / 4;
+      const x1 = w/2 - Math.cos(angle) * w;
+      const y1 = h/2 - Math.sin(angle) * h;
+      const x2 = w/2 + Math.cos(angle) * w;
+      const y2 = h/2 + Math.sin(angle) * h;
+      grad = ctx.createLinearGradient(x1, y1, x2, y2);
+    } else {
+      grad = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, Math.max(w,h));
+    }
+    const colors = gradStr.match(/#[0-9a-fA-F]{3,8}/g) || [];
+    if (colors.length < 2) return null;
+    colors.forEach((c, i) => grad.addColorStop(i / (colors.length - 1), c));
+    return grad;
+  } catch(e) { return null; }
+}
+
+function drawPhotos(ctx, w, h, pad) {
+  const shots = state.shots;
+  if (!shots.length) return;
+  const layout = state.layout;
+  const tasks = [];
+
+  if (layout === 'single') {
+    tasks.push({ src: shots[0], x: pad, y: pad, w: w-pad*2, h: h-pad*2 });
+  } else if (layout === 'quad') {
+    const cw = (w - pad*3) / 2;
+    const ch = (h - pad*3) / 2;
+    [[0,0],[1,0],[0,1],[1,1]].forEach(([col,row], i) => {
+      if (shots[i]) tasks.push({ src: shots[i], x: pad + col*(cw+pad), y: pad + row*(ch+pad), w: cw, h: ch });
+    });
+  } else if (layout === 'strip') {
+    const ph = (h - pad*7) / 6;
+    shots.forEach((s, i) => {
+      tasks.push({ src: s, x: pad, y: pad + i*(ph+pad), w: w-pad*2, h: ph });
+    });
+  }
+
+  tasks.forEach(task => {
+    const img = new Image();
+    img.onload = () => {
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(task.x, task.y, task.w, task.h, 6);
+      ctx.clip();
+      // cover fit
+      const ratio = Math.max(task.w / img.width, task.h / img.height);
+      const sw = img.width * ratio, sh = img.height * ratio;
+      const sx = task.x + (task.w - sw) / 2, sy = task.y + (task.h - sh) / 2;
+      ctx.drawImage(img, sx, sy, sw, sh);
+      ctx.restore();
+    };
+    img.src = task.src;
+  });
+}
+
+function applyToneOverlay(ctx, w, h) {
+  const tones = {
+    warm: ['rgba(255,160,60,0.18)', null],
+    cool: ['rgba(60,120,255,0.18)', null],
+    bw: ['rgba(0,0,0,0)', 'grayscale(1)'],
+    vintage: ['rgba(180,130,60,0.22)', null],
+    cinematic: ['rgba(0,20,40,0.35)', null],
+    rose: ['rgba(212,120,140,0.2)', null],
+    mint: ['rgba(80,200,140,0.18)', null],
+  };
+  if (state.tone !== 'none' && tones[state.tone]) {
+    const [overlay] = tones[state.tone];
+    if (overlay) {
+      ctx.fillStyle = overlay;
+      ctx.fillRect(0, 0, w, h);
+    }
+  }
+}
+
+function applyAdjustments(ctx, w, h) {
+  const adj = state.adjustments;
+  if (adj.vignette > 0) {
+    const strength = adj.vignette / 100;
+    const grad = ctx.createRadialGradient(w/2, h/2, Math.min(w,h)*0.3, w/2, h/2, Math.max(w,h)*0.8);
+    grad.addColorStop(0, 'rgba(0,0,0,0)');
+    grad.addColorStop(1, `rgba(0,0,0,${strength * 0.7})`);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+  }
+}
+
+function drawFrameDeco(ctx, w, h) {
+  if (state.frameDeco === 'none') return;
+  const decorations = {
+    flowers: ['🌸','🌺','🌹','🌼','🌻'],
+    stars: ['✨','⭐','💫','🌟','✦'],
+    hearts: ['💖','💕','❤️','💗','💓'],
+    ribbons: ['🎀','🎁','🎊','🎉','✦'],
+    doodle: ['✦','◆','●','▲','✱']
+  };
+  const emojis = decorations[state.frameDeco] || [];
+  ctx.font = '20px serif';
+  ctx.textAlign = 'center';
+  // corners
+  const corners = [[15, 15], [w-15, 15], [15, h-15], [w-15, h-15]];
+  corners.forEach(([x, y], i) => {
+    ctx.fillText(emojis[i % emojis.length] || '✦', x, y);
+  });
+}
+
+function drawBorder(ctx, w, h) {
+  const borders = {
+    gold: { color: '#C9A96E', width: 4, shadow: 'rgba(201,169,110,0.5)' },
+    silver: { color: '#C0C0C0', width: 3, shadow: 'rgba(192,192,192,0.5)' },
+    neon: { color: '#00FFFF', width: 3, shadow: 'rgba(0,255,255,0.8)' },
+    rose: { color: '#D4788A', width: 3, shadow: 'rgba(212,120,138,0.5)' }
+  };
+  const b = borders[state.border];
+  if (!b) return;
+  ctx.strokeStyle = b.color;
+  ctx.lineWidth = b.width;
+  ctx.shadowColor = b.shadow;
+  ctx.shadowBlur = 10;
+  ctx.strokeRect(b.width/2, b.width/2, w-b.width, h-b.width);
+  ctx.shadowBlur = 0;
+}
+
+// ══════════════════════════════
+// EXPORT
+// ══════════════════════════════
+function finalizeExport() {
+  const canvas = document.getElementById('exportCanvas');
+  const W = 800;
+  const H = getCompositeHeight(W);
+  drawComposite(canvas, W, H);
+}
+
+function downloadHD() {
+  finalizeExport();
+  setTimeout(() => {
+    const canvas = document.getElementById('exportCanvas');
+    const link = document.createElement('a');
+    link.download = `lumiere-${Date.now()}.jpg`;
+    link.href = canvas.toDataURL('image/jpeg', 0.95);
+    link.click();
+    showToast('✓ Foto berhasil didownload!');
+  }, 300);
+}
+
+function shareInstagram() {
+  finalizeExport();
+  setTimeout(() => {
+    const canvas = document.getElementById('exportCanvas');
+    canvas.toBlob(blob => {
+      if (navigator.share) {
+        navigator.share({ files: [new File([blob], 'lumiere.jpg', { type: 'image/jpeg' })] })
+          .catch(() => showToast('Share dibatalkan'));
+      } else {
+        downloadHD();
+        showToast('Download foto, lalu upload ke Instagram');
+      }
+    }, 'image/jpeg', 0.95);
+  }, 300);
+}
+
+function shareWhatsApp() {
+  downloadHD();
+  setTimeout(() => showToast('Foto didownload. Buka WhatsApp untuk berbagi!'), 500);
+}
+
+function generateQR() {
+  showToast('QR Code: Gunakan link download langsung');
+  downloadHD();
+}
+
+function printMode() {
+  finalizeExport();
+  setTimeout(() => {
+    const canvas = document.getElementById('exportCanvas');
+    const win = window.open('', '_blank');
+    win.document.write(`<html><head><title>Print - Lumière</title><style>body{margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#fff;}img{max-width:100%;max-height:100vh;}</style></head><body><img src="${canvas.toDataURL()}"></body></html>`);
+    win.document.close();
+    win.onload = () => { win.print(); };
+  }, 300);
+}
+
+// ══════════════════════════════
+// TOAST
+// ══════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ══════════════════════════════
+// INIT SHOT SLOTS WHEN STEP 3 IS SHOWN
+// ══════════════════════════════
+const origGoToStep = goToStep;
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('step-dot-3').addEventListener('click', () => {
+    if (state.layout) renderShotSlots();
+  });
+});
+</script>
+</body>
+</html>
